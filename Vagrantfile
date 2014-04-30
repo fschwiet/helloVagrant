@@ -6,19 +6,21 @@ VAGRANTFILE_API_VERSION = "2"
 
 # Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 Vagrant::Config.run do |config|
+
 	config.vm.box = "precise64"
 	config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
-	config.vm.define "web" do |web|
-		web.vm.forward_port 80, 8080
-		web.vm.provision "shell", path: "provision.web.sh"
+	config.vm.define "apache" do |apache|
 
-		web.vm.network :hostonly, "192.168.33.10"
+		apache.vm.provision "shell", path: "provision.apache.sh"
+
+		apache.vm.forward_port 80, 8080
+		apache.vm.network :hostonly, "192.168.33.10"
   	end
 
-  	config.vm.define "db" do |db|
-  		db.vm.provision :shell, path: "provision.db.sh"
-		db.vm.network :hostonly, "192.168.33.11"
+  	config.vm.define "mysql" do |mysql|
+  		mysql.vm.provision :shell, path: "provision.mysql.sh"
+		mysql.vm.network :hostonly, "192.168.33.11"
   	end
 end
 
