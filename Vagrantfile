@@ -18,9 +18,19 @@ Vagrant::Config.run do |config|
 		apache.vm.network :hostonly, "192.168.33.10"
   	end
 
+
+	config.vm.define "nodejs" do |nodejs|
+
+		nodejs.vm.provision "shell", path: "provision.nodejs.sh", privileged: false
+		#nodejs.vm.provision "shell", path: "https://raw.githubusercontent.com/creationix/nvm/v0.5.1/install.sh", privileged: false
+		#nodejs.vm.provision "shell", path: "provision.nodejs2.sh"
+		
+		nodejs.vm.network :hostonly, "192.168.33.11"
+  	end
+
   	config.vm.define "mysql" do |mysql|
   		mysql.vm.provision :shell, path: "provision.mysql.sh"
-		mysql.vm.network :hostonly, "192.168.33.11"
+		mysql.vm.network :hostonly, "192.168.33.12"
   	end
 end
 
