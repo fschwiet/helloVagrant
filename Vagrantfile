@@ -22,8 +22,6 @@ Vagrant::Config.run do |config|
 	config.vm.define "nodejs" do |nodejs|
 
 		nodejs.vm.provision "shell", path: "provision.nodejs.sh", privileged: false
-		#nodejs.vm.provision "shell", path: "https://raw.githubusercontent.com/creationix/nvm/v0.5.1/install.sh", privileged: false
-		#nodejs.vm.provision "shell", path: "provision.nodejs2.sh"
 		
 		nodejs.vm.network :hostonly, "192.168.33.11"
   	end
