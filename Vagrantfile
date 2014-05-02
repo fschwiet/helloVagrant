@@ -32,6 +32,23 @@ Vagrant::Config.run do |config|
   		mysql.vm.provision :shell, path: "provision.mysql.sh"
 		mysql.vm.network :hostonly, "192.168.33.12"
   	end
+
+	config.vm.define "minecraft" do |minecraft|
+		minecraft.vm.network :hostonly, "192.168.33.13"
+
+		minecraft.vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "minecraft"
+			chef.json = {
+				:minecraft => {
+					:options => {
+						motd: "This server installed with Vagrant",
+					online_mode: true
+					}
+				}
+			}
+		end
+	end
 end
 
 
