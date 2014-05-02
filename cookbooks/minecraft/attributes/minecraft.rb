@@ -1,4 +1,5 @@
 default.minecraft.user = "minecraft"
+default.minecraft.server_download_url = "https://s3.amazonaws.com/Minecraft.Download/versions/1.7.9/minecraft_server.1.7.9.jar"
 
 default.minecraft.options.generator_settings = ""
 default.minecraft.options.allow_nether = true

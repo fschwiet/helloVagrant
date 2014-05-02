@@ -9,6 +9,7 @@ package "openjdk-7-jre" do
 end
 
 username = node[:minecraft][:user]
+server_download_url = node[:minecraft][:server_download_url]
 home_dir = "/home/#{username}"
 
 user username do
@@ -26,7 +27,7 @@ directory "#{home_dir}/server" do
 end
 
 remote_file "#{home_dir}/server/minecraft_server.jar" do
-  source "https://s3.amazonaws.com/MinecraftDownload/launcher/minecraft_server.jar"
+  source server_download_url
   mode 0700
 end
 
