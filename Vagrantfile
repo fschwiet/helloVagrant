@@ -43,9 +43,19 @@ Vagrant.configure("2") do |config|
 
 	config.vm.define "nodejs" do |nodejs|
 
-		nodejs.vm.provision "shell", path: "provision.nodejs.sh", privileged: false
-		
 		nodejs.vm.network "private_network", ip: "192.168.33.11"
+
+		nodejs.vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "nodejs::install_from_binary"
+			chef.add_recipe "nodejs::npm"
+
+			chef.json = {
+				:nodejs => {
+					version: "0.10.6"
+				}	
+			}
+		end
   	end
 
 	config.vm.define "minecraft" do |minecraft|
