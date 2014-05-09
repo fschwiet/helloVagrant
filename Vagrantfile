@@ -12,9 +12,24 @@ Vagrant.configure("2") do |config|
 
 		nginx.vm.network "private_network", ip: "192.168.33.14"
 
+		nginx.vm.provision "shell",
+			inline: "echo $1 > /etc/nginx.conf",
+			args: [<<-EOS
+				location http://192.168.33.14/ {
+				    proxy_pass http://192.168.33.11:8080;
+				}
+			EOS
+			]
+
 		nginx.vm.provision :chef_solo do |chef|
 			chef.cookbooks_path = "cookbooks"
 			chef.add_recipe "nginx::repo"
+
+			chef.json = {
+				:nginx => {
+					conf_path: '/etc/nginx.conf'
+				}
+			}
 		end
 	end
 

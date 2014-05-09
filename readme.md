@@ -1,3 +1,11 @@
+
+
+try to include newlines in the nginx.conf
+
+
+answer this:  http://stackoverflow.com/questions/21150282/how-to-configure-nginx-with-chef-solo-on-vagrant
+
+
 need to pick a base box.
   Needs Ruby 1.9
   Needs Chef 11
