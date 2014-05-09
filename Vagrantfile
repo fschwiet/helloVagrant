@@ -3,14 +3,24 @@
 
 Vagrant.configure("2") do |config|
 
-	config.omnibus.chef_version = :latest
-
 	config.vm.box = "opscode-ubuntu-14.04"
 	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
 
+	config.omnibus.chef_version = :latest
+
+	config.vm.define "nginx" do |nginx|
+
+		nginx.vm.network "private_network", ip: "192.168.33.14"
+
+		nginx.vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "nginx::repo"
+		end
+	end
+
   	config.vm.define "mysql" do |mysql|
   		
-		mysql.vm.network "private_network", ip: "192.168.33.12"
+		mysql.vm.network "private_network", ip: "192.168.33.13"
 
 		mysql.vm.provision :chef_solo do |chef|
 			chef.cookbooks_path = "cookbooks"
@@ -37,7 +47,7 @@ Vagrant.configure("2") do |config|
 		apache.vm.provision "shell", path: "provision.apache.sh"
 
 		apache.vm.forward_port 80, 8080
-		apache.vm.network "private_network", ip: "192.168.33.10"
+		apache.vm.network "private_network", ip: "192.168.33.12"
   	end
 
 
@@ -52,7 +62,8 @@ Vagrant.configure("2") do |config|
 
 			chef.json = {
 				:nodejs => {
-					version: "0.10.6"
+					version: "0.10.6",
+					checksum_linux_x64: "cc7ccfce24ae0ebb0c50661ef8d98b5db07fc1cd4a222c5d1ae232260d5834ca"
 				}	
 			}
 		end
@@ -60,7 +71,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.define "minecraft" do |minecraft|
 
-		minecraft.vm.network "private_network", ip: "192.168.33.13"
+		minecraft.vm.network "private_network", ip: "192.168.33.10"
 
 		minecraft.vm.provision :chef_solo do |chef|
 			chef.cookbooks_path = "cookbooks"
