@@ -8,29 +8,36 @@ Vagrant.configure("2") do |config|
 
 	config.omnibus.chef_version = :latest
 
+	config.vm.provision "shell", inline: "echo 'set nocp' > /home/vagrant/.vimrc"
+
 	config.vm.define "nginx" do |nginx|
 
 		nginx.vm.network "private_network", ip: "192.168.33.14"
 
+		nginx.vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "nginx"
+
+			chef.json = {
+				:nginx => {
+					#conf_path: '/etc/nginx.conf'
+				}
+			}
+		end
+
 		nginx.vm.provision "shell",
-			inline: "echo $1 > /etc/nginx.conf",
+			inline: "echo -e $1 > /etc/nginx/conf.d/nginx.conf",
 			args: [<<-EOS
-				location http://192.168.33.14/ {
-				    proxy_pass http://192.168.33.11:8080;
+				server {
+					listen *:80;
+
+					location ~ ^/ {
+					    proxy_pass http://192.168.33.11:8080;
+					}
 				}
 			EOS
 			]
 
-		nginx.vm.provision :chef_solo do |chef|
-			chef.cookbooks_path = "cookbooks"
-			chef.add_recipe "nginx::repo"
-
-			chef.json = {
-				:nginx => {
-					conf_path: '/etc/nginx.conf'
-				}
-			}
-		end
 	end
 
   	config.vm.define "mysql" do |mysql|
