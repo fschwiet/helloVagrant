@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
 
 			chef.json = {
 				:nginx => {
-					#conf_path: '/etc/nginx.conf'
+					dir: '/etc/nginx'  # this is the default value, sample only
 				}
 			}
 		end
