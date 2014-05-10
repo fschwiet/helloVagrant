@@ -1,4 +1,6 @@
 
+why is vagrant reload nginx still needed?
+
 
 try to include newlines in the nginx.conf
 
