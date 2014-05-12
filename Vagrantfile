@@ -82,11 +82,14 @@ Vagrant.configure("2") do |config|
 				server {
 					listen *:80;
 
-				    proxy_pass http://192.168.33.11:8080;
+					location ~ ^/ {
+					    proxy_pass http://192.168.33.11:8080;
+					}
 				}
 			EOS
 			]
 
+		nginx.vm.provision "shell", inline: "sudo service nginx restart"
 	end
 
   	config.vm.define "mysql" do |mysql|
@@ -138,10 +141,9 @@ Vagrant.configure("2") do |config|
 			}
 		end
 
-		nodejs.vm.provision "shell",
-			inline: "sudo npm install forever -g; forever start --sourceDir /vagrant/src/server hello-server.js %1",
-			args: [80]
-	  	end
+		nodejs.vm.provision "shell", inline: "sudo npm install forever -g"
+		nodejs.vm.provision "shell", inline: "forever start --sourceDir /vagrant/src/server hello-server.js"
+	  end
 
 	config.vm.define "minecraft" do |minecraft|
 
