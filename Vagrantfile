@@ -89,7 +89,12 @@ Vagrant.configure("2") do |config|
 			EOS
 			]
 
-		nginx.vm.provision "shell", inline: "sudo service nginx restart"
+		## force nginx to reload configuration
+		  #nginx.vm.provision "shell", inline: " pid=$(cat /var/run/nginx.pid); sudo kill -HUP $pid"
+		    # failed with cat: /var/run/nginx.pid: No such file or directory
+		
+		  #nginx.vm.provision "shell", inline: 'sudo service nginx start'
+		    # seems to have no effect
 	end
 
   	config.vm.define "mysql" do |mysql|
