@@ -68,7 +68,6 @@ Vagrant.configure("2") do |config|
 
 		apache.vm.provision "shell", path: "provision.apache.sh"
 
-		apache.vm.forward_port 80, 8080
 		apache.vm.network "private_network", ip: "192.168.33.12"
   	end
 
