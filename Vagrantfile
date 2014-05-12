@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
 		end
 
 		biggy.vm.provision "shell",
-			inline: "sudo npm install forever -g"
+			inline: "sudo npm install pm2 -g"
 
 		# WHEN / HOW ARE CONFIG FILES COPIED?
 
@@ -59,12 +59,7 @@ Vagrant.configure("2") do |config|
 			EOS
 			]
 
-		# forever seems not to start after vagrant reload, maybe use PM2: https://github.com/Unitech/pm2#a8
-
-		biggy.vm.provision "shell",
-			inline: "forever start --uid $1 --sourceDir $1 $2",
-			args: ["/vagrant/src/server", "hello-server.js"]
-
+		biggy.vm.provision "shell", inline: "cd /vagrant/src/server; pm2 start hello-server.js; pm2 startup ubuntu;"
 	end
 
 	config.vm.define "nginx" do |nginx|
@@ -146,8 +141,9 @@ Vagrant.configure("2") do |config|
 			}
 		end
 
-		nodejs.vm.provision "shell", inline: "sudo npm install forever -g"
-		nodejs.vm.provision "shell", inline: "forever start --sourceDir /vagrant/src/server hello-server.js"
+		nodejs.vm.provision "shell", inline: "sudo npm install pm2 -g"
+		nodejs.vm.provision "shell", inline: "cd /vagrant/src/server; pm2 start hello-server.js"
+		nodejs.vm.provision "shell", inline: "cd ~;  pm2 startup ubuntu;"
 	  end
 
 	config.vm.define "minecraft" do |minecraft|
