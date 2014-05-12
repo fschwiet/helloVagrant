@@ -10,6 +10,63 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision "shell", inline: "echo 'set nocp' > /home/vagrant/.vimrc"
 
+	config.vm.define "biggy" do |biggy|
+
+		biggy.vm.network "private_network", ip: "192.168.33.15"
+
+		biggy.vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "nginx"
+			chef.add_recipe "nodejs::install_from_binary"
+			chef.add_recipe "nodejs::npm"			
+			chef.add_recipe "mysql::server"
+
+			chef.json = {
+				:nodejs => {
+					version: "0.10.6",
+					checksum_linux_x64: "cc7ccfce24ae0ebb0c50661ef8d98b5db07fc1cd4a222c5d1ae232260d5834ca"
+				},
+				:mysql => {
+
+					server_root_password: "password",
+
+					version: '5.6',
+					port: '3307',
+					data_dir: '/data-mysql',
+					allow_remote_root: true,
+					remove_anonymous_Users: true,
+					remove_test_database: true
+				}
+			}
+		end
+
+		biggy.vm.provision "shell",
+			inline: "sudo npm install forever -g"
+
+		# WHEN / HOW ARE CONFIG FILES COPIED?
+
+		# WHEN DO MIGRATIONS RUN?
+
+		biggy.vm.provision "shell",
+			inline: "echo -e $1 > /etc/nginx/conf.d/firstServer.conf",
+			args: [<<-EOS
+				server {
+					listen *:80;
+					location ~ ^/ {
+					    proxy_pass http://127.0.0.1:8080;
+					}
+				}
+			EOS
+			]
+
+		# forever seems not to start after vagrant reload, maybe use PM2: https://github.com/Unitech/pm2#a8
+
+		biggy.vm.provision "shell",
+			inline: "forever start --uid $1 --sourceDir $1 $2",
+			args: ["/vagrant/src/server", "hello-server.js"]
+
+	end
+
 	config.vm.define "nginx" do |nginx|
 
 		nginx.vm.network "private_network", ip: "192.168.33.14"
@@ -17,12 +74,6 @@ Vagrant.configure("2") do |config|
 		nginx.vm.provision :chef_solo do |chef|
 			chef.cookbooks_path = "cookbooks"
 			chef.add_recipe "nginx"
-
-			chef.json = {
-				:nginx => {
-					dir: '/etc/nginx'  # this is the default value, sample only
-				}
-			}
 		end
 
 		nginx.vm.provision "shell",
@@ -31,9 +82,7 @@ Vagrant.configure("2") do |config|
 				server {
 					listen *:80;
 
-					location ~ ^/ {
-					    proxy_pass http://192.168.33.11:8080;
-					}
+				    proxy_pass http://192.168.33.11:8080;
 				}
 			EOS
 			]
@@ -88,7 +137,11 @@ Vagrant.configure("2") do |config|
 				}	
 			}
 		end
-  	end
+
+		nodejs.vm.provision "shell",
+			inline: "sudo npm install forever -g; forever start --sourceDir /vagrant/src/server hello-server.js %1",
+			args: [80]
+	  	end
 
 	config.vm.define "minecraft" do |minecraft|
 
