@@ -143,7 +143,7 @@ Vagrant.configure("2") do |config|
 
 		nodejs.vm.provision "shell", inline: "sudo npm install pm2 -g"
 		nodejs.vm.provision "shell", inline: "cd /vagrant/src/server; pm2 start hello-server.js"
-		nodejs.vm.provision "shell", inline: "cd ~;  pm2 startup ubuntu;"
+		nodejs.vm.provision "shell", inline: "sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u vagrant;"
 	  end
 
 	config.vm.define "minecraft" do |minecraft|
