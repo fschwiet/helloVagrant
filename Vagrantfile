@@ -141,8 +141,11 @@ Vagrant.configure("2") do |config|
 			}
 		end
 
+		nodejs.vm.provision "shell", inline: "sudo mkdir /www; sudo chown vagrant /www; cp /vagrant/src/server/hello-server.js /www"
+		nodejs.vm.provision "shell", inline: "sudo mkdir /logs; sudo chown vagrant /logs; mkdir /logs/www"
+
 		nodejs.vm.provision "shell", inline: "sudo npm install pm2 -g"
-		nodejs.vm.provision "shell", inline: "cd /vagrant/src/server; pm2 start hello-server.js"
+		nodejs.vm.provision "shell", inline: "cd /www; pm2 start hello-server.js -e /logs/www/error.hello-server.log -o /logs/www/output.hello-server.log"
 		nodejs.vm.provision "shell", inline: "sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u vagrant;"
 	  end
 
