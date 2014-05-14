@@ -11,8 +11,14 @@ var server = http.createServer(function (request, response) {
 });
 
 server.on('error', function(e) {
-	console.log("error: " + e.code);
-	console.log(e);
+	console.error("error: " + e.code);
+	console.error(e);
+});
+
+
+process.on('uncaughtException', function(e) {
+	console.error("uncaughtException");
+	console.error(e);
 });
 
 // Listen on port 8000, IP defaults to 127.0.0.1
@@ -20,3 +26,12 @@ server.listen(8080);
 
 // Put a friendly message on the terminal
 console.log("Server running at http://*:8080/");
+
+function showStatus() {
+	console.log("running...");
+
+	setInterval(showStatus, 60 * 1000);
+}
+
+showStatus();
+
