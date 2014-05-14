@@ -1,6 +1,9 @@
 #!/bin/sh
 
-if [ $(ps -e -o uid,cmd | grep $(id -u) | grep pm2 | grep -v grep | wc -l | tr -s "\n") -eq 0 ]
+# note:  limited environment variables available within this crontab script.
+#   In particular, $PATH is not set.
+
+if [ $(ps -e -o cmd | grep pm2 | grep hello-server | grep -v grep | wc -l | tr -s "\n") -eq 0 ]
 then
-	cd /www; pm2 start hello-server.js
+	cd /sites/www; /usr/local/bin/pm2 start hello-server.js --user vagrant
 fi

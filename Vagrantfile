@@ -142,13 +142,17 @@ Vagrant.configure("2") do |config|
 		end
 
 		# create a directory for the website (/www) and logs (/log)
-		nodejs.vm.provision "shell", inline: "sudo mkdir /www; sudo chown vagrant /www; cp /vagrant/src/server/hello-server.js /www"
-		nodejs.vm.provision "shell", inline: "sudo mkdir /logs; sudo chown vagrant /logs; mkdir /logs/www"
+		nodejs.vm.provision "shell", inline: "sudo mkdir /sites; sudo chown vagrant /sites;"
+		nodejs.vm.provision "shell", inline: "sudo mkdir /sites/www; cp /vagrant/src/server/hello-server.js /sites/www"
+
+		nodejs.vm.provision "shell", inline: "cp /vagrant/provision.sites.sh /sites"
+		nodejs.vm.provision "shell", inline: "cp /vagrant/src/server/hello-server.js /sites/www"
 
 		# set the web app to always run using pm2
 		nodejs.vm.provision "shell", inline: "sudo npm install pm2 -g"
-		nodejs.vm.provision "shell", inline: "cd /www; pm2 start hello-server.js -e /logs/www/error.hello-server.log -o /logs/www/output.hello-server.log"
-		nodejs.vm.provision "shell", inline: "sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u vagrant;"
+		nodejs.vm.provision "shell", inline: "(crontab -l ; echo '@reboot /sites/provision.sites.sh') | crontab"
+		#nodejs.vm.provision "shell", inline: "cd /www; pm2 start hello-server.js -e /logs/www/error.hello-server.log -o /logs/www/output.hello-server.log"
+		#nodejs.vm.provision "shell", inline: "sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u vagrant;"
 	  end
 
 	config.vm.define "minecraft" do |minecraft|
