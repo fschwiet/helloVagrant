@@ -14,52 +14,20 @@ Vagrant.configure("2") do |config|
 
 		biggy.vm.network "private_network", ip: "192.168.33.15"
 
-		biggy.vm.provision :chef_solo do |chef|
-			chef.cookbooks_path = "cookbooks"
-			chef.add_recipe "nginx"
-			chef.add_recipe "nodejs::install_from_binary"
-			chef.add_recipe "nodejs::npm"			
-			chef.add_recipe "mysql::server"
+		installMysql biggy.vm, "password"
+		installNodejs biggy.vm
+		installNginx biggy.vm
 
-			chef.json = {
-				:nodejs => {
-					version: "0.10.6",
-					checksum_linux_x64: "cc7ccfce24ae0ebb0c50661ef8d98b5db07fc1cd4a222c5d1ae232260d5834ca"
-				},
-				:mysql => {
-
-					server_root_password: "password",
-
-					version: '5.6',
-					port: '3307',
-					data_dir: '/data-mysql',
-					allow_remote_root: true,
-					remove_anonymous_Users: true,
-					remove_test_database: true
-				}
-			}
-		end
-
-		biggy.vm.provision "shell",
-			inline: "sudo npm install pm2 -g"
-
-		# WHEN / HOW ARE CONFIG FILES COPIED?
-
-		# WHEN DO MIGRATIONS RUN?
-
-		writeNginxProxyRule biggy.vm, "127.0.0.1", 8080
+		deploySites biggy.vm
 		configureNodeToAlwaysRunSites biggy.vm
+		writeNginxProxyRule biggy.vm, "127.0.0.1", 8080
 	end
 
 	config.vm.define "nginx" do |nginx|
 
 		nginx.vm.network "private_network", ip: "192.168.33.14"
 
-		nginx.vm.provision :chef_solo do |chef|
-			chef.cookbooks_path = "cookbooks"
-			chef.add_recipe "nginx"
-		end
-
+		installNginx nginx.vm
 		writeNginxProxyRule nginx.vm, "192.168.33.11", 8080
 	end
 
@@ -67,24 +35,7 @@ Vagrant.configure("2") do |config|
   		
 		mysql.vm.network "private_network", ip: "192.168.33.13"
 
-		mysql.vm.provision :chef_solo do |chef|
-			chef.cookbooks_path = "cookbooks"
-			chef.add_recipe "mysql::server"
-
-			chef.json = {
-				:mysql => {
-
-					server_root_password: "password",
-
-					version: '5.6',
-					port: '3307',
-					data_dir: '/data-mysql',
-					allow_remote_root: true,
-					remove_anonymous_Users: true,
-					remove_test_database: true
-				}
-			}
-		end
+		installMysql mysql.vm, "password"
   	end
 
 	config.vm.define "apache" do |apache|
@@ -99,26 +50,8 @@ Vagrant.configure("2") do |config|
 
 		nodejs.vm.network "private_network", ip: "192.168.33.11"
 
-		nodejs.vm.provision :chef_solo do |chef|
-			chef.cookbooks_path = "cookbooks"
-			chef.add_recipe "nodejs::install_from_binary"
-			chef.add_recipe "nodejs::npm"
-
-			chef.json = {
-				:nodejs => {
-					version: "0.11.10",
-					checksum_linux_x64: "5397e1e79c3052b7155deb73525761e3a97d5fcb0868d1e269efb25d7ec0c127"
-				}	
-			}
-		end
-
-		# create a directory for the website (/www) and logs (/log)
-		nodejs.vm.provision "shell", inline: "sudo mkdir /sites; sudo chown vagrant /sites;"
-		nodejs.vm.provision "shell", inline: "sudo mkdir /sites/www; cp /vagrant/src/server/hello-server.js /sites/www"
-
-		nodejs.vm.provision "shell", inline: "cp /vagrant/provision.sites.sh /sites"
-		nodejs.vm.provision "shell", inline: "cp /vagrant/src/server/hello-server.js /sites/www"
-
+		installNodejs nodejs.vm
+		deploySites nodejs.vm
 		configureNodeToAlwaysRunSites nodejs.vm
 	  end
 
@@ -137,6 +70,60 @@ Vagrant.configure("2") do |config|
 					}
 				}
 			}
+		end
+	end
+
+	def deploySites(vm)
+
+		vm.provision "shell", inline: "sudo mkdir /sites; sudo chown vagrant /sites;"
+		vm.provision "shell", inline: "sudo mkdir /sites/www; cp /vagrant/src/server/hello-server.js /sites/www"
+
+		vm.provision "shell", inline: "cp /vagrant/provision.sites.sh /sites"
+		vm.provision "shell", inline: "cp /vagrant/src/server/hello-server.js /sites/www"
+	end
+
+	def installNodejs(vm)
+
+		vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "nodejs::install_from_binary"
+			chef.add_recipe "nodejs::npm"
+
+			chef.json = {
+				:nodejs => {
+					version: "0.11.10",
+					checksum_linux_x64: "5397e1e79c3052b7155deb73525761e3a97d5fcb0868d1e269efb25d7ec0c127"
+				}	
+			}
+		end
+	end
+
+	def installMysql(vm, rootPassword)
+
+		vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "mysql::server"
+
+			chef.json = {
+				:mysql => {
+
+					server_root_password: rootPassword,
+
+					version: '5.6',
+					port: '3307',
+					data_dir: '/data-mysql',
+					allow_remote_root: true,
+					remove_anonymous_Users: true,
+					remove_test_database: true
+				}
+			}
+		end		
+	end
+
+	def installNginx(vm)
+		vm.provision :chef_solo do |chef|
+			chef.cookbooks_path = "cookbooks"
+			chef.add_recipe "nginx"
 		end
 	end
 
@@ -178,7 +165,6 @@ Vagrant.configure("2") do |config|
 		vm.provision "shell", inline: "(crontab -l ; echo '@reboot /sites/provision.sites.sh') | crontab"
 		vm.provision "shell", inline: "/sites/provision.sites.sh"		
 	end
-
 end
 
 
