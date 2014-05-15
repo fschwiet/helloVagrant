@@ -47,19 +47,8 @@ Vagrant.configure("2") do |config|
 
 		# WHEN DO MIGRATIONS RUN?
 
-		biggy.vm.provision "shell",
-			inline: "echo -e $1 > /etc/nginx/conf.d/firstServer.conf",
-			args: [<<-EOS
-				server {
-					listen *:80;
-					location ~ ^/ {
-					    proxy_pass http://127.0.0.1:8080;
-					}
-				}
-			EOS
-			]
-
-		biggy.vm.provision "shell", inline: "cd /vagrant/src/server; pm2 start hello-server.js; pm2 startup ubuntu;"
+		writeNginxProxyRule biggy.vm, "127.0.0.1", 8080
+		configureNodeToAlwaysRunSites biggy.vm
 	end
 
 	config.vm.define "nginx" do |nginx|
@@ -71,25 +60,7 @@ Vagrant.configure("2") do |config|
 			chef.add_recipe "nginx"
 		end
 
-		nginx.vm.provision "shell",
-			inline: "echo -e $1 > /etc/nginx/conf.d/nginx.conf",
-			args: [<<-EOS
-				server {
-					listen *:80;
-
-					location ~ ^/ {
-					    proxy_pass http://192.168.33.11:8080;
-					}
-				}
-			EOS
-			]
-
-		## force nginx to reload configuration
-		  #nginx.vm.provision "shell", inline: " pid=$(cat /var/run/nginx.pid); sudo kill -HUP $pid"
-		    # failed with cat: /var/run/nginx.pid: No such file or directory
-		
-		  #nginx.vm.provision "shell", inline: 'sudo service nginx start'
-		    # seems to have no effect
+		writeNginxProxyRule nginx.vm, "192.168.33.11", 8080
 	end
 
   	config.vm.define "mysql" do |mysql|
@@ -148,12 +119,7 @@ Vagrant.configure("2") do |config|
 		nodejs.vm.provision "shell", inline: "cp /vagrant/provision.sites.sh /sites"
 		nodejs.vm.provision "shell", inline: "cp /vagrant/src/server/hello-server.js /sites/www"
 
-		# set the web app to always run using pm2
-		nodejs.vm.provision "shell", inline: "sudo npm install pm2 -g"
-		nodejs.vm.provision "shell", inline: "(crontab -l ; echo '@reboot /sites/provision.sites.sh') | crontab"
-		nodejs.vm.provision "shell", inline: "/sites/provision.sites.sh"		
-		#nodejs.vm.provision "shell", inline: "cd /www; pm2 start hello-server.js -e /logs/www/error.hello-server.log -o /logs/www/output.hello-server.log"
-		#nodejs.vm.provision "shell", inline: "sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u vagrant;"
+		configureNodeToAlwaysRunSites nodejs.vm
 	  end
 
 	config.vm.define "minecraft" do |minecraft|
@@ -173,6 +139,46 @@ Vagrant.configure("2") do |config|
 			}
 		end
 	end
+
+	def writeNginxProxyRule(vm, ipAddress, port)
+
+		nginxConfig = <<-EOS
+			server {
+					listen 80;
+
+					location ~ ^/ {
+					    proxy_pass http://$IP_ADDRESS:$PORT;
+
+				        proxy_http_version 1.1;
+				        proxy_set_header Upgrade \\$http_upgrade;
+				        proxy_set_header Connection 'upgrade';
+				        proxy_set_header Host \\$host;
+				        proxy_cache_bypass \\$http_upgrade;
+					}
+				}
+			EOS
+
+		nginxConfig = nginxConfig.gsub("$IP_ADDRESS", ipAddress)
+		nginxConfig = nginxConfig.gsub("$PORT", port.to_s)
+
+		vm.provision "shell", 
+			inline: "echo -e $1 > /etc/nginx/conf.d/firstServer.conf", args: [ nginxConfig ]
+
+		## force nginx to reload configuration
+		  #vm.provision "shell", inline: " pid=$(cat /var/run/nginx.pid); sudo kill -HUP $pid"
+		    # failed with cat: /var/run/nginx.pid: No such file or directory
+
+		  #vm.provision "shell", inline: 'sudo service nginx start'
+		    # seems to have no effect
+	end
+
+
+	def configureNodeToAlwaysRunSites(vm)
+		vm.provision "shell", inline: "sudo npm install pm2 -g"
+		vm.provision "shell", inline: "(crontab -l ; echo '@reboot /sites/provision.sites.sh') | crontab"
+		vm.provision "shell", inline: "/sites/provision.sites.sh"		
+	end
+
 end
 
 
