@@ -151,6 +151,7 @@ Vagrant.configure("2") do |config|
 		# set the web app to always run using pm2
 		nodejs.vm.provision "shell", inline: "sudo npm install pm2 -g"
 		nodejs.vm.provision "shell", inline: "(crontab -l ; echo '@reboot /sites/provision.sites.sh') | crontab"
+		nodejs.vm.provision "shell", inline: "/sites/provision.sites.sh"		
 		#nodejs.vm.provision "shell", inline: "cd /www; pm2 start hello-server.js -e /logs/www/error.hello-server.log -o /logs/www/output.hello-server.log"
 		#nodejs.vm.provision "shell", inline: "sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u vagrant;"
 	  end
