@@ -1,4 +1,3 @@
-review this: https://www.digitalocean.com/community/articles/how-to-host-multiple-node-js-applications-on-a-single-vps-with-nginx-forever-and-crontab
 review security concerns: https://www.digitalocean.com/community/questions/how-do-you-secure-your-new-server
 
 
@@ -15,6 +14,9 @@ Could use a better box
   Needs Chef 11
   Prefer to have chef-solo provisioner installed (for now, it isn't)
   would like something production grade
+
+
+Minecraft server seems not to be reliable (not important)
 
 
 This Vagranfile uses chef-solo installed by omnibus, so vagrant-omnibus must be installed, you can run: 
