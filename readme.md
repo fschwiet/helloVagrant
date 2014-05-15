@@ -1,3 +1,5 @@
+review this: https://www.digitalocean.com/community/articles/how-to-host-multiple-node-js-applications-on-a-single-vps-with-nginx-forever-and-crontab
+review security concerns: https://www.digitalocean.com/community/questions/how-do-you-secure-your-new-server
 
 
 
