@@ -5,24 +5,33 @@
 def enableFirewall(vm)
 
 	firewallConfig = <<-EOS
-			sudo apt-get install ufw
-			sudo ufw default deny incoming
-			sudo ufw default allow outgoing
+		sudo apt-get install -y ufw
+		sudo ufw default deny incoming
+		sudo ufw default allow outgoing
 
 
-			sudo ufw allow 21/tcp    #ftp, used by wget during some provisioning
-			sudo ufw allow 22/tcp    #ssh
+		sudo ufw allow 21/tcp    #ftp, used by wget during some provisioning
+		sudo ufw allow 22/tcp    #ssh
 
-			sudo ufw allow 80/tcp    #www
-			sudo ufw allow 8080/tcp  #www testing
-			sudo ufw allow 3307/tcp  #mysql
+		sudo ufw allow 80/tcp    #www
+		sudo ufw allow 8080/tcp  #www testing
+		sudo ufw allow 3307/tcp  #mysql
 
-			sudo echo yes | ufw enable
-			sudo ufw status verbose
-		EOS
+		sudo echo yes | ufw enable
+		sudo ufw status verbose
+	EOS
 
 	vm.provision "shell", inline: firewallConfig
 end
+
+def protectSshFromLoginAttacks(vm)
+	vm.provision "shell", inline: <<-EOS
+		sudo apt-get install -y fail2ban; 
+		sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local; 
+		sudo service fail2ban restart
+	EOS
+end
+
 
 
 Vagrant.configure("2") do |config|
@@ -34,7 +43,12 @@ Vagrant.configure("2") do |config|
 
 	enableFirewall config.vm
 
+	protectSshFromLoginAttacks config.vm
+
 	config.vm.provision "shell", inline: "echo 'set nocp' > /home/vagrant/.vimrc"
+
+	config.vm.define "nothing" do |nothing|
+	end
 
 	config.vm.define "biggy" do |biggy|
 

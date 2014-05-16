@@ -1,5 +1,3 @@
-review security concerns: https://www.digitalocean.com/community/questions/how-do-you-secure-your-new-server
-
 
 - https://www.digitalocean.com/community/articles/initial-server-setup-with-ubuntu-12-04
   - change root password
@@ -8,7 +6,9 @@ review security concerns: https://www.digitalocean.com/community/questions/how-d
   - limit with can login with ssh
 
 
-why is vagrant reload nginx still needed?
+Why is vagrant reload nginx still needed?
+
+Why is vagrant reload needed to get fail2ban working?  This could have to do with the various system logs being in sync.
 
 
 try to include newlines in the nginx.conf
