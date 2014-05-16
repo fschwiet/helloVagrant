@@ -1,12 +1,38 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+
+def enableFirewall(vm)
+
+	firewallConfig = <<-EOS
+			sudo apt-get install ufw
+			sudo ufw default deny incoming
+			sudo ufw default allow outgoing
+
+
+			sudo ufw allow 21/tcp    #ftp, used by wget during some provisioning
+			sudo ufw allow 22/tcp    #ssh
+
+			sudo ufw allow 80/tcp    #www
+			sudo ufw allow 8080/tcp  #www testing
+			sudo ufw allow 3307/tcp  #mysql
+
+			sudo echo yes | ufw enable
+			sudo ufw status verbose
+		EOS
+
+	vm.provision "shell", inline: firewallConfig
+end
+
+
 Vagrant.configure("2") do |config|
 
 	config.vm.box = "opscode-ubuntu-14.04"
 	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
 
 	config.omnibus.chef_version = :latest
+
+	enableFirewall config.vm
 
 	config.vm.provision "shell", inline: "echo 'set nocp' > /home/vagrant/.vimrc"
 
@@ -40,9 +66,9 @@ Vagrant.configure("2") do |config|
 
 	config.vm.define "apache" do |apache|
 
-		apache.vm.provision "shell", path: "provision.apache.sh"
-
 		apache.vm.network "private_network", ip: "192.168.33.12"
+
+		apache.vm.provision "shell", path: "provision.apache.sh"
   	end
 
 
@@ -53,7 +79,7 @@ Vagrant.configure("2") do |config|
 		installNodejs nodejs.vm
 		deploySites nodejs.vm
 		configureNodeToAlwaysRunSites nodejs.vm
-	  end
+	end
 
 	config.vm.define "minecraft" do |minecraft|
 

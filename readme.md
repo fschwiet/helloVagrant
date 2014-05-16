@@ -1,6 +1,12 @@
 review security concerns: https://www.digitalocean.com/community/questions/how-do-you-secure-your-new-server
 
 
+- https://www.digitalocean.com/community/articles/initial-server-setup-with-ubuntu-12-04
+  - change root password
+  - create user account
+  - give root privileges
+  - limit with can login with ssh
+
 
 why is vagrant reload nginx still needed?
 
