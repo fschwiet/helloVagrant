@@ -1,4 +1,6 @@
 
+- watch for security discusion on https://github.com/smdahlen/vagrant-digitalocean/issues/114
+
 - https://www.digitalocean.com/community/articles/initial-server-setup-with-ubuntu-12-04
   - change root password
   - create user account
