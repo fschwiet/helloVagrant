@@ -15,7 +15,9 @@ def enableFirewall(vm)
 
 		sudo ufw allow 80/tcp    #www
 		sudo ufw allow 8080/tcp  #www testing
-		sudo ufw allow 3307/tcp  #mysql
+		sudo ufw allow 8081/tcp  #www testing
+		sudo ufw allow 8082/tcp  #www testing
+		sudo ufw allow 3306/tcp  #mysql
 
 		sudo echo yes | ufw enable
 		sudo ufw status verbose
@@ -32,6 +34,16 @@ def protectSshFromLoginAttacks(vm)
 	EOS
 end
 
+def aptgetUpdate(vm)
+	vm.provision :chef_solo do |chef|
+		chef.cookbooks_path = "cookbooks"
+		chef.add_recipe "apt"
+	end
+end
+
+def installGit(vm)
+	vm.provision "shell", inline: "sudo apt-get install -y git"
+end
 
 
 Vagrant.configure("2") do |config|
@@ -40,6 +52,8 @@ Vagrant.configure("2") do |config|
 	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
 
 	config.omnibus.chef_version = :latest
+
+	aptgetUpdate config.vm
 
 	enableFirewall config.vm
 
@@ -53,6 +67,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "biggy" do |biggy|
 
 		biggy.vm.network "private_network", ip: "192.168.33.15"
+
+		installGit biggy.vm
 
 		installMysql biggy.vm, "password"
 		installNodejs biggy.vm
@@ -131,8 +147,10 @@ Vagrant.configure("2") do |config|
 
 			chef.json = {
 				:nodejs => {
-					version: "0.11.10",
-					checksum_linux_x64: "5397e1e79c3052b7155deb73525761e3a97d5fcb0868d1e269efb25d7ec0c127"
+					#version: "0.10.6",
+ 					#checksum_linux_x64: "cc7ccfce24ae0ebb0c50661ef8d98b5db07fc1cd4a222c5d1ae232260d5834ca"
+					#version: "0.11.10",
+					#checksum_linux_x64: "5397e1e79c3052b7155deb73525761e3a97d5fcb0868d1e269efb25d7ec0c127"
 				}	
 			}
 		end
@@ -150,7 +168,7 @@ Vagrant.configure("2") do |config|
 					server_root_password: rootPassword,
 
 					version: '5.6',
-					port: '3307',
+					port: '3306',
 					data_dir: '/data-mysql',
 					allow_remote_root: true,
 					remove_anonymous_Users: true,
