@@ -147,8 +147,8 @@ Vagrant.configure("2") do |config|
 
 			chef.json = {
 				:nodejs => {
-					#version: "0.10.6",
- 					#checksum_linux_x64: "cc7ccfce24ae0ebb0c50661ef8d98b5db07fc1cd4a222c5d1ae232260d5834ca"
+					version: "0.10.6",
+ 					checksum_linux_x64: "cc7ccfce24ae0ebb0c50661ef8d98b5db07fc1cd4a222c5d1ae232260d5834ca"
 					#version: "0.11.10",
 					#checksum_linux_x64: "5397e1e79c3052b7155deb73525761e3a97d5fcb0868d1e269efb25d7ec0c127"
 				}	
