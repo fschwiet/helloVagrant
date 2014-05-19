@@ -8,9 +8,10 @@
   - limit with can login with ssh
 
 
-Why is vagrant reload nginx still needed?
-
-Why is vagrant reload needed to get fail2ban working?  This could have to do with the various system logs being in sync.
+Reboot is needed for some changes to kick in:
+  - Nginx configuration change
+  - fail2ban activation  (maybe, there is latency before the ssh login kicks in)
+Maybe reboot after provision with https://github.com/exratione/vagrant-provision-reboot
 
 
 try to include newlines in the nginx.conf
