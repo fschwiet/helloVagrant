@@ -163,25 +163,17 @@ Vagrant.configure("2") do |config|
 		
 		vm.provision :chef_solo do |chef|
 			chef.cookbooks_path = "cookbooks"
-			chef.add_recipe "mysql::server"
+			chef.add_recipe "mymysql"
 
 			chef.json = {
 				:mysql => {
-
 					server_root_password: rootPassword,
-
 					version: '5.6',
 					port: '3306',
-					data_dir: '/data-mysql',
-					allow_remote_root: true,
-					remove_anonymous_Users: true,
-					remove_test_database: true
+					data_dir: '/data-mysql'
 				}
 			}
 		end		
-
-		vm.provision "shell", path: "fixMysqlConfig.sh", args: ["/etc/mysql/my.cnf"]
-		vm.provision "shell", inline: "service mysql restart"		
 	end
 
 	def installNginx(vm)
