@@ -158,6 +158,9 @@ Vagrant.configure("2") do |config|
 
 	def installMysql(vm, rootPassword)
 
+		# Table and columns names will not be case sensitive
+		# reference: http://dev.mysql.com/doc/refman/5.0/en/identifier-case-sensitivity.html
+		
 		vm.provision :chef_solo do |chef|
 			chef.cookbooks_path = "cookbooks"
 			chef.add_recipe "mysql::server"
@@ -176,6 +179,9 @@ Vagrant.configure("2") do |config|
 				}
 			}
 		end		
+
+		vm.provision "shell", path: "fixMysqlConfig.sh", args: ["/etc/mysql/my.cnf"]
+		vm.provision "shell", inline: "service mysql restart"		
 	end
 
 	def installNginx(vm)
