@@ -184,7 +184,7 @@ Vagrant.configure("2") do |config|
 
 	def deploySites(vm)
 
-		vm.provision "shell", inline: "sudo mkdir /sites; sudo chown vagrant /sites;"
+		vm.provision "shell", inline: "sudo mkdir /sites; sudo chown $USER /sites;"
 		vm.provision "shell", inline: "sudo mkdir /sites/www; cp /vagrant/src/server/hello-server.js /sites/www"
 
 		vm.provision "shell", inline: "cp /vagrant/provision.sites.sh /sites"
@@ -192,6 +192,9 @@ Vagrant.configure("2") do |config|
 	end
 
 	def installNodejs(vm)
+
+		#  NPM failed to install on DigitalOcean since make was missing
+		vm.provision "shell", inline: "sudo apt-get install -y make"
 
 		vm.provision :chef_solo do |chef|
 			chef.cookbooks_path = "cookbooks"
