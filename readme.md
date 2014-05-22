@@ -1,3 +1,11 @@
+Requirements
+	vagrant plugin install vagrant-omnibus  		# for installing chef-solo
+	vagrant plugin install vagrant-secret   		# for managing secrets in an external config file
+	vagrant plugin install vagrant-digitalocean  	# for deploying to DigitalOcean
+
+	rsync - 
+		- for windows, run Cygwin's c:\Cygwin\cygwinsetup.exe and add rsync
+		- rsync needs to be in current path
 
 - watch for security discusion on https://github.com/smdahlen/vagrant-digitalocean/issues/114
 
@@ -28,8 +36,6 @@ Could use a better box
 Minecraft server seems not to be reliable (not important)
 
 
-This Vagranfile uses chef-solo installed by omnibus, so vagrant-omnibus must be installed, you can run: 
-	vagrant plugin install vagrant-omnibus
 
 
 cookbooks used:

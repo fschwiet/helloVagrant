@@ -34,6 +34,41 @@ def protectSshFromLoginAttacks(vm)
 	EOS
 end
 
+def createSwapFileIfMissing(vm,sizeInMegabytes)
+
+	# final size of dd result is bs * count
+
+	createScript = <<-EOS 
+
+		if [[ $(sudo swapon -s) != */* ]]
+		then
+			echo "Creating swap drive of $size megabytes"
+
+			## Create the swapfile
+			sudo dd if=/dev/zero of=/swapfile bs=1024 count=$sizek
+			sudo chown root:root /swapfile 
+			sudo chmod 0600 /swapfile
+			sudo mkswap /swapfile
+
+			## Configue the system to use the swapfile
+
+			# swapon works until next reboot
+			sudo swapon /swapfile
+			# /etc/stab is used after reboot
+			echo "/swapfile       none    swap    sw      0       0" >> /etc/fstab
+
+		else
+			echo "Swap drive already detected - none created."
+		fi
+
+	EOS
+
+	createScript = createScript.gsub("$size", sizeInMegabytes.to_s)
+
+	vm.provision "shell", inline: createScript
+end
+
+
 def aptgetUpdate(vm)
 	vm.provision :chef_solo do |chef|
 		chef.cookbooks_path = "cookbooks"
@@ -51,6 +86,21 @@ Vagrant.configure("2") do |config|
 	config.vm.box = "opscode-ubuntu-14.04"
 	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
 
+	digitalOceanMemorySize = 512;
+
+  	config.vm.provider "digital_ocean" do |provider, override|
+    	override.ssh.private_key_path = 'C:/src/configs/asimplereader/digital-ocean-keys/id_rsa'
+    	override.vm.box = 'digital_ocean'
+    	override.vm.box_url = "https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+
+    	provider.client_id = Secret.client_id  # stored in .vagrant/secrets.yaml
+    	provider.api_key = Secret.api_key
+
+    	provider.image = 'Ubuntu 14.04 x64'
+    	provider.size = digitalOceanMemorySize.to_s + 'MB'
+    	provider.ssh_key_name = 'Vagrant Biggy'
+  	end	
+
 	config.omnibus.chef_version = :latest
 
 	aptgetUpdate config.vm
@@ -59,7 +109,10 @@ Vagrant.configure("2") do |config|
 
 	protectSshFromLoginAttacks config.vm
 
-	config.vm.provision "shell", inline: "echo 'set nocp' > /home/vagrant/.vimrc"
+	#  DigitalOcean image doesn't have a swapfile setup
+	createSwapFileIfMissing config.vm, 2 * digitalOceanMemorySize
+
+	#config.vm.provision "shell", inline: "touch /home/vagrant/.vimrc; echo 'set nocp' > /home/vagrant/.vimrc"
 
 	config.vm.define "nothing" do |nothing|
 	end
