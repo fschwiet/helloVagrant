@@ -187,7 +187,7 @@ Vagrant.configure("2") do |config|
 		vm.provision "shell", inline: "sudo mkdir /sites; sudo chown $USER /sites;"
 		vm.provision "shell", inline: "sudo mkdir /sites/www; cp /vagrant/src/server/hello-server.js /sites/www"
 
-		vm.provision "shell", inline: "cp /vagrant/provision.sites.sh /sites"
+		vm.provision "shell", inline: "cp /vagrant/provision.sites.sh /sites; chmod g+x /sites/provision.sites.sh"
 		vm.provision "shell", inline: "cp /vagrant/src/server/hello-server.js /sites/www"
 	end
 
