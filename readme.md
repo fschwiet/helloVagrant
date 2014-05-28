@@ -9,20 +9,14 @@ Requirements
 
 - watch for security discusion on https://github.com/smdahlen/vagrant-digitalocean/issues/114
 
-- https://www.digitalocean.com/community/articles/initial-server-setup-with-ubuntu-12-04
-  - change root password
-  - create user account
-  - give root privileges
-  - limit with can login with ssh
-
 
 Reboot is needed for some changes to kick in:
   - Nginx configuration change
-  - fail2ban activation  (maybe, there is latency before the ssh login kicks in)
+  - fail2ban activation  (perhaps instead there is latency before the ssh login kicks in)
 Maybe reboot after provision with https://github.com/exratione/vagrant-provision-reboot
 
 
-try to include newlines in the nginx.conf
+nginx .config loses its newlines
 
 
 Could use a better box
@@ -34,7 +28,6 @@ Could use a better box
 
 
 Minecraft server seems not to be reliable (not important)
-
 
 
 
