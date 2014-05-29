@@ -7,27 +7,22 @@ Requirements
 		- for windows, run Cygwin's c:\Cygwin\cygwinsetup.exe and add rsync
 		- rsync needs to be in current path
 
-- watch for security discusion on https://github.com/smdahlen/vagrant-digitalocean/issues/114
-
-
 Reboot is needed for some changes to kick in:
   - Nginx configuration change
   - fail2ban activation  (perhaps instead there is latency before the ssh login kicks in)
 Maybe reboot after provision with https://github.com/exratione/vagrant-provision-reboot
 
 
-nginx .config loses its newlines
-
-
-Could use a better box
+Could use a better vagrant box
   that matches OS version for DigitalOcean
   Needs Ruby 1.9
   Needs Chef 11
   Prefer to have chef-solo provisioner installed (for now, it isn't)
-  would like something production grade
 
 
-Minecraft server seems not to be reliable (not important)
+minor: nginx .config loses its newlines
+
+minor: Minecraft server not reliable
 
 
 
