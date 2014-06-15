@@ -54,6 +54,9 @@ cookbooks used:
 		mysql
 		mysql-chef_gem - https://github.com/opscode-cookbooks/mysql-chef_gem
 		php - https://github.com/opscode-cookbooks/php
+			build-essential
+			xml - https://github.com/opscode-cookbooks/xml
+			mysql
 		apache2 - https://github.com/onehealth-cookbooks/apache2
 		iis - really? - https://github.com/opscode-cookbooks/iis
 		windows - really? - https://github.com/opscode-cookbooks/windows
