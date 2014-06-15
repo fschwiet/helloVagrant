@@ -1,3 +1,7 @@
+
+
+
+
 Requirements
 	vagrant plugin install vagrant-omnibus  		# for installing chef-solo
 	vagrant plugin install vagrant-secret   		# for managing secrets in an external config file
@@ -45,6 +49,15 @@ cookbooks used:
 		https://github.com/hw-cookbooks/runit
 		??
 			https://github.com/opscode-cookbooks/yum
+
+	Wordpress - https://github.com/brint/wordpress-cookbook
+		mysql
+		mysql-chef_gem - https://github.com/opscode-cookbooks/mysql-chef_gem
+		php - https://github.com/opscode-cookbooks/php
+		apache2 - https://github.com/onehealth-cookbooks/apache2
+		iis - really? - https://github.com/opscode-cookbooks/iis
+		windows - really? - https://github.com/opscode-cookbooks/windows
+		openssl - https://github.com/opscode-cookbooks/openssl
 
 
 subtree notes: don't forget to squash!  IE:
