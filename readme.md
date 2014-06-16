@@ -64,6 +64,7 @@ cookbooks used:
 		?? iptables - https://github.com/opscode-cookbooks/iptables
 		?? pacman - https://github.com/jesseadams/pacman
 		?? database - https://github.com/opscode-cookbooks/database
+		?? aws - https://github.com/opscode-cookbooks/aws
 
 
 subtree notes: don't forget to squash!  IE:
