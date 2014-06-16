@@ -1,4 +1,13 @@
 
+nothing: /tmp/vagrant-chef-3/chef-solo-1/cookbooks => /Users/user/.berkshelf/nothing/vagrant/berkshelf-20140615-21141-5qyui4-nothing
+
+Failed to mount folders in Linux guest. This is usually because
+the "vboxsf" file system is not available. Please verify that
+the guest additions are properly installed in the guest and
+can work properly. The command attempted was:
+
+mount -t vboxsf -o uid=`id -u vagrant`,gid=`getent group vagrant | cut -d: -f3` v-csc-1 /tmp/vagrant-chef-3/chef-solo-1/cookbooks
+mount -t vboxsf -o uid=`id -u vagrant`,gid=`id -g vagrant` v-csc-1 /tmp/vagrant-chef-3/chef-solo-1/cookbooks
 
 
 
@@ -6,6 +15,8 @@ Requirements
 	vagrant plugin install vagrant-omnibus  		# for installing chef-solo
 	vagrant plugin install vagrant-secret   		# for managing secrets in an external config file
 	vagrant plugin install vagrant-digitalocean  	# for deploying to DigitalOcean
+	vagrant plugin install vagrant-berkshelf --plugin-version '>=2.0.1'
+	    (which needed, on mac: gem install vagrant-vbguest)
 
 	rsync - 
 		- for windows, run Cygwin's c:\Cygwin\cygwinsetup.exe and add rsync

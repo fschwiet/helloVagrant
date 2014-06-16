@@ -83,9 +83,11 @@ end
 
 Vagrant.configure("2") do |config|
 
-	config.vm.box = "opscode-ubuntu-14.04"
-	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
-
+	#config.vm.box = "opscode-ubuntu-14.04"
+	#config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
+	config.vm.box = "opscode-centos-6.3"
+	config.vm.box_url = "https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.3_chef-11.2.0.box"
+	
 	digitalOceanMemorySize = 512;
 
   	config.vm.provider "digital_ocean" do |provider, override|
@@ -115,6 +117,21 @@ Vagrant.configure("2") do |config|
 	#config.vm.provision "shell", inline: "touch /home/vagrant/.vimrc; echo 'set nocp' > /home/vagrant/.vimrc"
 
 	config.vm.define "nothing" do |nothing|
+	end
+
+	config.vm.define "wordpress" do |wordpress|
+
+		wordpress.vm.network "private_network", ip: "192.168.33.16"
+
+		wordpress.berkshelf.enabled = true
+
+		wordpress.vm.provision :chef_solo do |chef|
+		#	chef.cookbooks_path = "cookbooks"
+			chef.run_list = ["recipe[wordpress::default"]
+
+		#	chef.json = {
+		#	}
+		end	
 	end
 
 	config.vm.define "biggy" do |biggy|
