@@ -83,10 +83,10 @@ end
 
 Vagrant.configure("2") do |config|
 
-	#config.vm.box = "opscode-ubuntu-14.04"
-	#config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
-	config.vm.box = "opscode-centos-6.3"
-	config.vm.box_url = "https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.3_chef-11.2.0.box"
+	config.vm.box = "opscode-ubuntu-14.04"
+	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
+	#config.vm.box = "opscode-centos-6.3"
+	#config.vm.box_url = "https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.3_chef-11.2.0.box"
 	
 	digitalOceanMemorySize = 512;
 
@@ -119,6 +119,7 @@ Vagrant.configure("2") do |config|
 	config.vm.define "nothing" do |nothing|
 	end
 
+	ignore = <<-EOS
 	config.vm.define "wordpress" do |wordpress|
 
 		unless Vagrant.has_plugin?("berkshelf")
@@ -140,7 +141,8 @@ Vagrant.configure("2") do |config|
 		#	}
 		end	
 	end
-
+	EOS
+	
 	config.vm.define "biggy" do |biggy|
 
 		biggy.vm.network "private_network", ip: "192.168.33.15"
