@@ -121,6 +121,13 @@ Vagrant.configure("2") do |config|
 
 	config.vm.define "wordpress" do |wordpress|
 
+		unless Vagrant.has_plugin?("berkshelf")
+			puts "--- PLUGIN MISSING ---"
+			puts "Please install Berkshelf:"
+			puts "    vagrant plugin install vagrant-berkshelf --plugin-version '>=2.0.1'"
+			raise Vagrant::Errors::VagrantError.new, "Plugin missing"
+		end
+
 		wordpress.vm.network "private_network", ip: "192.168.33.16"
 
 		wordpress.berkshelf.enabled = true
