@@ -62,6 +62,8 @@ cookbooks used:
 		windows - really? - https://github.com/opscode-cookbooks/windows
 		openssl - https://github.com/opscode-cookbooks/openssl
 		?? iptables - https://github.com/opscode-cookbooks/iptables
+		?? pacman - https://github.com/jesseadams/pacman
+		?? database - https://github.com/opscode-cookbooks/database
 
 
 subtree notes: don't forget to squash!  IE:
